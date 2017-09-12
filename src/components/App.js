@@ -29,7 +29,7 @@ class App extends React.Component {
           <Switch>
             <Route exact path='/' component={Home} />
             <Route exact path='/plant' component={Plant} />
-            <Route exact path='/post' component={Post} />
+            <Route path='/post/:postId' component={Post} />
           </Switch>
         </div>
       </div>
