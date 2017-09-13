@@ -6,6 +6,7 @@ import './../App.css';
 import Home from './Home';
 import Plant from './Plant';
 import Post from './Post';
+import CreatePost from './CreatePost';
 
 class App extends React.Component {
   render() {
@@ -30,6 +31,7 @@ class App extends React.Component {
             <Route exact path='/' component={Home} />
             <Route exact path='/plant' component={Plant} />
             <Route path='/post/:postId' component={Post} />
+            <Route exact path='/create/post' component={CreatePost} />
           </Switch>
         </div>
       </div>
