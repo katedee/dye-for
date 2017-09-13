@@ -2,7 +2,15 @@ import React from 'react';
 
 class PostImage extends React.Component {
     render () {
-        return <img src={this.props.url} alt='hey'/>;
+        return (
+            <div className="image-caption">
+                <img src={this.props.url} alt='hey'/>
+                <input
+                type='text'
+                placeholder='Enter an image caption' 
+                />
+            </div>
+        );
     }
 }
 
