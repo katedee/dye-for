@@ -12,29 +12,31 @@ class CreatePost extends React.Component {
         materials: '',
         fibre: '',
         safety: '',
-        imageUrl: [],
-        imageId: []
+        images: []
     }
+    this.updateCaption = this.updateCaption.bind(this);
   }
 
   componentWillMount() {
     if(localStorage.getItem("post")) {
-      const postImages = JSON.parse(localStorage.getItem("post")).imageUrl;
-      const postImagesId = JSON.parse(localStorage.getItem("post")).imageId;
+      const postImages = JSON.parse(localStorage.getItem("post")).images;
 
       this.setState({
-        imageUrl: postImages,
-        imageId: postImagesId
+        images: postImages
       });
     }
   }
 
   saveImages () {
-    console.log(this.state);
+    /*
+    ** Check to see if we already have a post-in-progress saved in storage.
+    ** If yes, get that, parse it, add the new images to it, and save
+    **
+    ** Otherwise, just send the entire state to be saved if it's a brand new post.
+    */
     if(localStorage.getItem("post")) {
       const postData = JSON.parse(localStorage.getItem("post"));
-      postData.imageUrl = this.state.imageUrl;
-      postData.imageId = this.state.imageId;
+      postData.images = this.state.images
 
       localStorage.setItem("post", JSON.stringify(postData));
     } else {
@@ -44,20 +46,30 @@ class CreatePost extends React.Component {
     this.renderImages();
   }
 
+  updateCaption(e, url){
+    this.setState({
+      // find the image with the same url property value
+      images: this.state.images.map(image => image.imageUrl === url ?
+        // update the caption of the matched item
+        {...image, imageCaption: e.target.value} :
+        // or just return the image
+        image
+      )
+    });
+  }
+
   renderImages () {
     //check localStorage on init load
     //then use state
-    if(!this.state.imageUrl.length) {
+    if(!this.state.images) {
       console.log('no images saved');
       return;
     }
     
-    const images = this.state.imageUrl;
-    console.log(this.state.imageUrl);
+    const images = this.state.images;
 
     const postImages = images.map((image, i) => {
-      console.log(image);
-      return <PostImage url={image} key={i}/>;
+      return <PostImage url={image.imageUrl} key={i} onChange={this.updateCaption} imageCaption={image.imageCaption}/>;
     });
 
     return postImages;
@@ -137,8 +149,11 @@ class CreatePost extends React.Component {
       return response.json()
     }).then(image => {
       this.setState({
-        imageId: this.state.imageId.concat(image.id),
-        imageUrl: this.state.imageUrl.concat(image.url),
+        images: this.state.images.concat({
+          imageUrl: image.url,
+          imageId: image.id,
+          imageCaption: ''
+        })
       });
       //save this to localStorage (and clear this storage once posted)
       //render images
