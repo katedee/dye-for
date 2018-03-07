@@ -1,22 +1,43 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './index.css';
 import App from './components/App';
-import { ApolloProvider, createNetworkInterface, ApolloClient } from 'react-apollo'
 import { BrowserRouter } from 'react-router-dom'
-import registerServiceWorker from './registerServiceWorker';
+import { ApolloClient, InMemoryCache } from 'apollo-client-preset';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
+import { ApolloProvider } from 'react-apollo';
+import { render } from 'react-dom';
 
 
-const networkInterface = createNetworkInterface({ uri: 'https://api.graph.cool/simple/v1/cj70tva881t4c0197qhlept5q' });
+const httpLink = createHttpLink({
+    uri: 'https://api.graph.cool/simple/v1/cjbxw7ife3lx40127famxbu0s',
+});
 
-const client = new ApolloClient({ networkInterface });
+const authLink = setContext(async (req, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = localStorage.getItem('token');
 
-ReactDOM.render(
-    <BrowserRouter>
-        <ApolloProvider client={client}>
+    return {
+        ...headers,
+        headers: {
+            authorization: token ? `Bearer ${token}` : null,
+        },
+    };
+});
+
+const link = authLink.concat(httpLink);
+
+const client = new ApolloClient({
+    link,
+    cache: new InMemoryCache(),
+});
+
+render(
+    <ApolloProvider client={client}>
+        <BrowserRouter>
             <App />
-        </ApolloProvider>
-    </BrowserRouter>
+        </BrowserRouter>
+    </ApolloProvider>
     , document.getElementById('root')
 );
-registerServiceWorker();
+// registerServiceWorker();

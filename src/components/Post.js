@@ -1,7 +1,8 @@
 import React from 'react';
-import { graphql, gql } from 'react-apollo';
 import Linkify from 'react-linkify';
 // import marked from 'marked'
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 class Post extends React.Component {
     formatPostText (postText) {
@@ -22,7 +23,6 @@ class Post extends React.Component {
         if( images.length <=  0) { return }
 
         const allImages = images.map((image, i) => {
-            console.log(image);
             return(
                 <div key={i}>
                     <img src={ image.imageUrl } alt={ image.caption }/>
@@ -98,7 +98,7 @@ const GET_POST_QUERY = gql`
                 caption
             }
             safetyDisposal
-            postedBy {
+            author {
                 id
                 username
             }

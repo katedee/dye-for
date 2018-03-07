@@ -1,4 +1,6 @@
 import React from 'react';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 import Dropzone from 'react-dropzone';
 import PostImage from './PostImage';
 
@@ -27,6 +29,23 @@ class CreatePost extends React.Component {
     }
   }
 
+  async removeImage (e, fileId) {
+    await this.props.deleteFileMutation({
+      variables: {
+        fileId
+      }
+    });
+
+    const imageIndex = this.state.images.findIndex((image) => { return image.imageId === fileId });
+
+    this.setState({
+      images: [
+        ...this.state.images.slice(0, imageIndex),
+        ...this.state.images.slice(imageIndex + 1)
+      ]
+    });
+  }
+
   saveImages () {
     /*
     ** Check to see if we already have a post-in-progress saved in storage.
@@ -46,10 +65,10 @@ class CreatePost extends React.Component {
     this.renderImages();
   }
 
-  updateCaption(e, url){
+  updateCaption(e, imageId){
     this.setState({
       // find the image with the same url property value
-      images: this.state.images.map(image => image.imageUrl === url ?
+      images: this.state.images.map(image => image.imageId === imageId ?
         // update the caption of the matched item
         {...image, imageCaption: e.target.value} :
         // or just return the image
@@ -69,7 +88,7 @@ class CreatePost extends React.Component {
     const images = this.state.images;
 
     const postImages = images.map((image, i) => {
-      return <PostImage url={image.imageUrl} key={i} onChange={this.updateCaption} imageCaption={image.imageCaption}/>;
+      return <PostImage key={i} onChange={this.updateCaption} {...image}/>;
     });
 
     return postImages;
@@ -162,9 +181,35 @@ class CreatePost extends React.Component {
   }
 }
 
-export default CreatePost;
+const DELETE_FILE_MUTATION = gql`
+  mutation DeleteFileMutation ($fileId: ID!) {
+    deleteFile(id: $fileId) {
+      file {
+        id
+      }
+    }
+  }
+`
+// const ADD_POST_MUTATION = `gql
+//   mutation AddNewPostMutation () {
+//     description: 
+//     postTitle: 
+//     postImages: 
+//     safetyDisposal: 
+//     postedBy: 
+//     materials: 
+//     fibresUsed: 
+//     sources: 
+//     dyeSources: 
+//   }
+// `
+
+export default graphql(DELETE_FILE_MUTATION, { name: 'deleteFileMutation' })(CreatePost);
 
 // upload the image
 // set state imageId and Urk
 // create PostImage
 //c clear state      
+
+// PREVIEW THE POST
+// POST THE POST

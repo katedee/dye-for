@@ -1,7 +1,7 @@
 # project: cj70tva881t4c0197qhlept5q
 # version: 7
 
-type Post implements Node {
+type Post @model {
   description: String!
   createdAt: DateTime!
   id: ID! @isUnique
@@ -9,14 +9,14 @@ type Post implements Node {
   postTitle: String!
   postImages: [PostImage!]! @relation(name: "ImagesOnPost")
   safetyDisposal: String
-  postedBy: User @relation(name: "UserOnPost")
+  author: User @relation(name: "PostsByUser")
   materials: String
   fibresUsed: String!
   sources: [DyeSource!]! @relation(name: "DyesOnPost")
   dyeSources: String!
 }
 
-type File implements Node {
+type File @model {
   contentType: String!
   createdAt: DateTime!
   id: ID! @isUnique
@@ -27,15 +27,20 @@ type File implements Node {
   url: String! @isUnique
 }
 
-type User implements Node {
+type User @model {
   createdAt: DateTime!
   id: ID! @isUnique
   updatedAt: DateTime!
-  username: String!
-  posts: [Post!]! @relation(name: "UserOnPost")
+  # username: String! @isUnique
+  # other template fields
+  # email: String @isUnique
+  # password: String!
+  posts: [Post!]! @relation(name: "PostsByUser")
+  facebookUserId: String @isUnique
+  email: String # optional, because it's obtained from Facebook API
 }
 
-type PostImage implements Node {
+type PostImage @model {
   id: ID! @isUnique
   imageUrl: String!
   caption: String
@@ -44,10 +49,28 @@ type PostImage implements Node {
   updatedAt: DateTime!
 }
 
-type DyeSource implements Node {
+type DyeSource @model {
   name: String!
   postsIn: [Post!]! @relation(name: "DyesOnPost")
   createdAt: DateTime!
   id: ID! @isUnique
   updatedAt: DateTime!
 }
+
+
+
+
+# added by facebook template: (please uncomment)
+# type User @model {
+#   # Required system field:
+#   id: ID! @isUnique # read-only (managed by Graphcool)
+# 
+#   # Optional system fields (remove if not needed):
+#   createdAt: DateTime! # read-only (managed by Graphcool)
+#   updatedAt: DateTime! # read-only (managed by Graphcool)
+# 
+#   facebookUserId: String @isUnique
+#   email: String # optional, because it's obtained from Facebook API
+# }
+# 
+
