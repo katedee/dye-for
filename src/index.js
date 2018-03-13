@@ -15,8 +15,7 @@ const httpLink = createHttpLink({
 
 const authLink = setContext(async (req, { headers }) => {
     // get the authentication token from local storage if it exists
-    const token = localStorage.getItem('token');
-
+    const token = localStorage.getItem('graphcoolToken');
     return {
         ...headers,
         headers: {
@@ -33,11 +32,11 @@ const client = new ApolloClient({
 });
 
 render(
+    <BrowserRouter>
     <ApolloProvider client={client}>
-        <BrowserRouter>
             <App />
+            </ApolloProvider>
         </BrowserRouter>
-    </ApolloProvider>
     , document.getElementById('root')
 );
 // registerServiceWorker();

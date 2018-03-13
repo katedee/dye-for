@@ -20,6 +20,16 @@ functions:
     type: resolver
     schema: ./src/facebook/loggedInUser.graphql
 
+# permissions:
+#   - operation: Post.read
+#   - operation: Post.create
+#     authenticated: true
+#   - operation: PostsByUser.connect
+#     authenticated: true
+
+permissions:
+  - operation: "*"
+
 # added by email-password template: (please uncomment)
   # signup:
   #   type: resolver

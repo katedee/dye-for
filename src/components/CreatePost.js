@@ -1,6 +1,8 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
+import { withRouter } from 'react-router'
+
 import Dropzone from 'react-dropzone';
 import PostImage from './PostImage';
 
@@ -9,25 +11,51 @@ class CreatePost extends React.Component {
     super()
     this.state = {
         description: '',
-        title: '',
-        sources: '',
+        postTitle: '',
+        dyeSources: '',
         materials: '',
-        fibre: '',
-        safety: '',
-        images: []
+        fibresUsed: '',
+        safetyDisposal: '',
+        postImages: []
     }
     this.updateCaption = this.updateCaption.bind(this);
   }
 
   componentWillMount() {
     if(localStorage.getItem("post")) {
-      const postImages = JSON.parse(localStorage.getItem("post")).images;
+      //const postImages = JSON.parse(localStorage.getItem("post")).postImages;
+      const {
+        description,
+        postTitle,
+        dyeSources,
+        materials,
+        fibresUsed,
+        safetyDisposal,
+        postImages
+      } = JSON.parse(localStorage.getItem("post"));
 
       this.setState({
-        images: postImages
+        description: description,
+        postTitle: postTitle,
+        dyeSources: dyeSources,
+        materials: materials,
+        fibresUsed: fibresUsed,
+        safetyDisposal: safetyDisposal,
+        postImages: postImages
       });
     }
   }
+
+  // _createPost = async () => {
+  //   const { description, url } = this.state
+  //   await this.props.postMutation({
+  //     variables: {
+  //       description,
+  //       url
+  //     }
+  //   })
+  // }
+
 
   async removeImage (e, fileId) {
     await this.props.deleteFileMutation({
@@ -36,12 +64,12 @@ class CreatePost extends React.Component {
       }
     });
 
-    const imageIndex = this.state.images.findIndex((image) => { return image.imageId === fileId });
+    const imageIndex = this.state.postImages.findIndex((image) => { return image.imageId === fileId });
 
     this.setState({
-      images: [
-        ...this.state.images.slice(0, imageIndex),
-        ...this.state.images.slice(imageIndex + 1)
+      postImages: [
+        ...this.state.postImages.slice(0, imageIndex),
+        ...this.state.postImages.slice(imageIndex + 1)
       ]
     });
   }
@@ -55,7 +83,7 @@ class CreatePost extends React.Component {
     */
     if(localStorage.getItem("post")) {
       const postData = JSON.parse(localStorage.getItem("post"));
-      postData.images = this.state.images
+      postData.postImages = this.state.postImages
 
       localStorage.setItem("post", JSON.stringify(postData));
     } else {
@@ -68,7 +96,7 @@ class CreatePost extends React.Component {
   updateCaption(e, imageId){
     this.setState({
       // find the image with the same url property value
-      images: this.state.images.map(image => image.imageId === imageId ?
+      postImages: this.state.postImages.map(image => image.imageId === imageId ?
         // update the caption of the matched item
         {...image, imageCaption: e.target.value} :
         // or just return the image
@@ -80,18 +108,66 @@ class CreatePost extends React.Component {
   renderImages () {
     //check localStorage on init load
     //then use state
-    if(!this.state.images) {
+    if(!this.state.postImages) {
       console.log('no images saved');
       return;
     }
     
-    const images = this.state.images;
+    const images = this.state.postImages;
 
     const postImages = images.map((image, i) => {
+      console.log(image);
       return <PostImage key={i} onChange={this.updateCaption} {...image}/>;
     });
 
     return postImages;
+  }
+
+  handlePost = async () => {
+    const loggedInUser = this.props.data.loggedInUser
+
+    // redirect if no user is logged in
+    if(!loggedInUser) {
+      console.warn('Only logged in users can create new posts')
+      return
+    }
+
+    const { 
+      description,
+      dyeSources,
+      fibresUsed,
+      materials,
+      postImages,
+      postTitle,
+      safetyDisposal,
+    } = this.state
+
+    const postImagesData = postImages.map((image, i) => {
+      return {
+        'caption': image.imageCaption,
+        'imageUrl': image.imageUrl,
+        'fileId': image.imageId
+      }
+    });
+
+    const authorId = loggedInUser.id
+
+    console.log(postImagesData)
+
+    await this.props.CreatePostMutation({ 
+      variables: { 
+        authorId, 
+        description,
+        dyeSources,
+        fibresUsed,
+        materials,
+        postImagesData,
+        postTitle,
+        safetyDisposal,
+      } 
+    })
+    console.log('posted post')
+    //this.props.history.push('/')
   }
 
   render () {
@@ -101,41 +177,41 @@ class CreatePost extends React.Component {
           <div>
             <div className='col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2'>
               <input
-                  value={this.state.title}
-                  onChange={(e) => this.setState({ title: e.target.value })}
+                  defaultValue={this.state.postTitle}
+                  onChange={(e) => this.setState({ postTitle: e.target.value })}
                   type='text'
                   placeholder='Enter the Post Title' 
               />
               <textarea
-                  value={this.state.description}
+                  defaultValue={this.state.description}
                   onChange={(e) => this.setState({ description: e.target.value })}
                   type='text'
                   placeholder='Enter post description here'
               ></textarea>
               <input
-                value={this.state.sources}
-                onChange={(e) => this.setState({ sources: e.target.value })}
+                defaultValue={this.state.dyeSources}
+                onChange={(e) => this.setState({ dyeSources: e.target.value })}
                 type='text'
                 placeholder='Enter the dyesources, seperated by a comma, here' 
               />
               <hr/>
               <div><p>Image uploader here eventually</p></div>
               <textarea
-                value={this.state.fibre}
-                onChange={(e) => this.setState({ fibre: e.target.value })}
+                defaultValue={this.state.fibresUsed}
+                onChange={(e) => this.setState({ fibresUsed: e.target.value })}
                 type='text'
                 placeholder='Enter a list of fibre used, seperate by commas'
               ></textarea>
 
               <textarea
-                value={this.state.materials}
+                defaultValue={this.state.materials}
                 onChange={(e) => this.setState({ materials: e.target.value })}
                 type='text'
                 placeholder='Enter a list of materials, seperate by a comma'
               ></textarea>
               <textarea
-                value={this.state.safety}
-                onChange={(e) => this.setState({ safety: e.target.value })}
+                defaultValue={this.state.safetyDisposal}
+                onChange={(e) => this.setState({ safetyDisposal: e.target.value })}
                 type='text'
                 placeholder='Enter safety and disposal tips here'
               ></textarea>
@@ -147,9 +223,7 @@ class CreatePost extends React.Component {
               >
                 Drag and drop an image here, or click to select a file!
               </Dropzone>
-              <button>
-              Submit
-              </button>
+              <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost}>Post</button>
             </div>
           </div>
       )
@@ -168,7 +242,7 @@ class CreatePost extends React.Component {
       return response.json()
     }).then(image => {
       this.setState({
-        images: this.state.images.concat({
+        postImages: this.state.postImages.concat({
           imageUrl: image.url,
           imageId: image.id,
           imageCaption: ''
@@ -190,21 +264,46 @@ const DELETE_FILE_MUTATION = gql`
     }
   }
 `
-// const ADD_POST_MUTATION = `gql
-//   mutation AddNewPostMutation () {
-//     description: 
-//     postTitle: 
-//     postImages: 
-//     safetyDisposal: 
-//     postedBy: 
-//     materials: 
-//     fibresUsed: 
-//     sources: 
-//     dyeSources: 
-//   }
-// `
 
-export default graphql(DELETE_FILE_MUTATION, { name: 'deleteFileMutation' })(CreatePost);
+const CREATE_POST = gql`
+  mutation CreatePost(
+    $authorId: ID!
+    $description: String!
+    $dyeSources: String!
+    $fibresUsed: String!
+    $materials: String!
+    $postImagesData: [PostpostImagesPostImage!]! 
+    $postTitle: String!
+    $safetyDisposal: String!
+  ){
+    createPost(
+      authorId: $authorId
+      description: $description
+      dyeSources: $dyeSources
+      fibresUsed: $fibresUsed
+      materials: $materials
+      postImages: $postImagesData
+      postTitle: $postTitle
+      safetyDisposal: $safetyDisposal
+    ){
+      id
+    }
+  }
+`
+
+const LOGGED_IN_USER = gql`
+  query LoggedInUser {
+    loggedInUser {
+      id
+    }
+  }
+`
+
+export default compose(
+  graphql(CREATE_POST, { name: 'CreatePostMutation' }),
+  graphql(DELETE_FILE_MUTATION, { name: 'deleteFileMutation' }),
+  graphql(LOGGED_IN_USER, { fetchPolicy: 'network-only' }),
+)(withRouter(CreatePost))
 
 // upload the image
 // set state imageId and Urk
@@ -213,3 +312,4 @@ export default graphql(DELETE_FILE_MUTATION, { name: 'deleteFileMutation' })(Cre
 
 // PREVIEW THE POST
 // POST THE POST
+

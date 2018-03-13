@@ -23,7 +23,7 @@ class PostImage extends React.Component {
                 type='text'
                 placeholder='Enter an image caption' 
                 onChange={this.handleChange}
-                value={this.props.imageCaption}
+                defaultValue={this.props.imageCaption}
                 />
                 <button onClick={this.removeImage}>remove</button>
             </div>

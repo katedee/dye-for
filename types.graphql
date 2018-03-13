@@ -42,11 +42,12 @@ type User @model {
 
 type PostImage @model {
   id: ID! @isUnique
-  imageUrl: String!
+  imageUrl: String
   caption: String
   post: Post @relation(name: "ImagesOnPost")
   createdAt: DateTime!
   updatedAt: DateTime!
+  fileId: String!
 }
 
 type DyeSource @model {
@@ -57,20 +58,4 @@ type DyeSource @model {
   updatedAt: DateTime!
 }
 
-
-
-
-# added by facebook template: (please uncomment)
-# type User @model {
-#   # Required system field:
-#   id: ID! @isUnique # read-only (managed by Graphcool)
-# 
-#   # Optional system fields (remove if not needed):
-#   createdAt: DateTime! # read-only (managed by Graphcool)
-#   updatedAt: DateTime! # read-only (managed by Graphcool)
-# 
-#   facebookUserId: String @isUnique
-#   email: String # optional, because it's obtained from Facebook API
-# }
-# 
 

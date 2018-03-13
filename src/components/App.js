@@ -8,6 +8,7 @@ import './../App.css';
 import Home from './Home';
 import Plant from './Plant';
 import Post from './Post';
+import ListPosts from './ListPosts';
 import CreatePost from './CreatePost';
 import CreateNewPostLink from './CreateNewPostLink';
 import SignUp from './SignUp';
@@ -103,14 +104,45 @@ class App extends React.Component {
     window.location.reload()
   }
 
-
-  render() {
+  renderNav = () => {
+    console.log(this._isLoggedIn());
     if (this._isLoggedIn()) {
       return this.renderLoggedIn()
     } else {
       return this.renderLoggedOut()
     }
+  }
 
+
+  render() {
+    return(
+      <div className="App">
+        <div className="App-header">
+          <header>
+            <nav>
+              <ul>
+                <li><Link to='/'>Home</Link></li>
+                <li><Link to='/post'>Post</Link></li>
+                <li><Link to='/plant'>Plant</Link></li>
+              </ul>
+            </nav>
+          </header>
+        </div>
+        {this.renderNav()}
+
+        {/* header goes here*/}
+
+        <div className='ph3 pv1 background-gray'>
+          <Switch>
+            <Route exact path='/' component={Home} />
+            <Route exact path='/signup' component={SignUp} />
+            <Route exact path='/plant' component={Plant} />
+            <Route path='/post/:postId' component={Post} />
+            <Route exact path='/create/post' component={CreatePost} />
+          </Switch>
+        </div>
+      </div>
+    );
   }
 
   renderLoggedIn() {
@@ -127,7 +159,7 @@ class App extends React.Component {
             Logout
           </span>
         </div>
-        {/* <ListPage /> */}
+        <ListPosts />
         <CreateNewPostLink />
       </div>
     )
@@ -147,7 +179,7 @@ class App extends React.Component {
           </div>
           <span>Log in to create new posts</span>
         </div>
-      {/* <ListPage /> */}
+       
       </div>
     )
   }
