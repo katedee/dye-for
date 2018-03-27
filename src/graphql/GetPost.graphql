@@ -1,0 +1,20 @@
+query GetPostQuery($postId: ID) {
+        Post(id: $postId) {
+            id
+            createdAt
+            description
+            postTitle
+            postImages {
+                id
+                imageUrl
+                caption
+            }
+            safetyDisposal
+            author {
+                id
+            }
+            materials
+            fibresUsed
+            dyeSources
+        }
+    }

@@ -58,4 +58,23 @@ type DyeSource @model {
   updatedAt: DateTime!
 }
 
+fragment PostData on Post {
+  id
+  createdAt
+  description
+  postTitle
+  postImages {
+      id
+      imageUrl
+      caption
+  }
+  safetyDisposal
+  author {
+      id
+  }
+  materials
+  fibresUsed
+  dyeSources
+}
+
 

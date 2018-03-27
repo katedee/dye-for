@@ -1,0 +1,10 @@
+query ($node_id: ID!, $user_id: ID!) {
+  SomePostExists(
+    filter: {
+      id: $node_id,
+      author: {
+        id: $user_id
+      }
+    }
+  )
+}

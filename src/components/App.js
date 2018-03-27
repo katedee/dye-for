@@ -7,9 +7,10 @@ import './../App.css';
 
 import Home from './Home';
 import Plant from './Plant';
-import Post from './Post';
+import PostContainer from './PostContainer';
 import ListPosts from './ListPosts';
 import CreatePost from './CreatePost';
+import EditPost from './EditPost';
 import CreateNewPostLink from './CreateNewPostLink';
 import SignUp from './SignUp';
 import gql from 'graphql-tag';
@@ -17,38 +18,6 @@ import { graphql, compose } from 'react-apollo'
 
 const FACEBOOK_APP_ID = '563597464000766';
 const FACEBOOK_API_VERSION = 'v2.12'; // e.g. v2.10
-
-// class App extends React.Component {
-//   render() {
-//     return (
-//       <div className="App">
-//         <div className="App-header">
-//           <header>
-//             <nav>
-//               <ul>
-//                 <li><Link to='/'>Home</Link></li>
-//                 <li><Link to='/post'>Post</Link></li>
-//                 <li><Link to='/plant'>Plant</Link></li>
-//               </ul>
-//             </nav>
-//         </header>
-//         </div>
-
-//         {/* header goes here*/}
-
-//         <div className='ph3 pv1 background-gray'>
-//           <Switch>
-//             <Route exact path='/' component={Home} />
-//             <Route exact path='/signup' component={SignUp} />
-//             <Route exact path='/plant' component={Plant} />
-//             <Route path='/post/:postId' component={Post} />
-//             <Route exact path='/create/post' component={CreatePost} />
-//           </Switch>
-//         </div>
-//       </div>
-//     );
-//   }
-// }
 
 class App extends React.Component {
 
@@ -137,8 +106,9 @@ class App extends React.Component {
             <Route exact path='/' component={Home} />
             <Route exact path='/signup' component={SignUp} />
             <Route exact path='/plant' component={Plant} />
-            <Route path='/post/:postId' component={Post} />
+            <Route path='/post/:postId' component={PostContainer} />
             <Route exact path='/create/post' component={CreatePost} />
+            <Route exact path='/edit/post/:postId' component={EditPost} />
           </Switch>
         </div>
       </div>
