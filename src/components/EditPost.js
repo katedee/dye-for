@@ -5,6 +5,7 @@ import { withRouter } from 'react-router'
 
 import Dropzone from 'react-dropzone';
 import PostImage from './PostImage';
+import PostForm from './PostForm';
 
 // import GET_POST_QUERY from './../graphql/GetPost.graphql';
 
@@ -131,78 +132,32 @@ class EditPost extends React.Component {
         }
 
       // PARSE GET QUERY INSTEAD
-      const {
-          description,
-          postTitle,
-          dyeSources,
-          materials,
-          fibresUsed,
-          safetyDisposal,
-          postImages
-      } = this.props.getPostQuery.Post;
+    //   const {
+    //       description,
+    //       postTitle,
+    //       dyeSources,
+    //       materials,
+    //       fibresUsed,
+    //       safetyDisposal,
+    //       postImages
+    //   } = this.props.getPostQuery.Post;
 
-    console.log(this.props.getPostQuery.Post.postImages);
+    // console.log(this.props.getPostQuery.Post.postImages);
 
         
-    const postImagess = this.renderImages();
+    // const postImagess = this.renderImages();
 
       const { postId } = this.props.match.params;
-      const post = this.props.getPostQuery.Post;
+      //const post = this.props.getPostQuery.Post;
 
-      return (
-          <div>
-            <div className='col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2'>
-              <input
-                  defaultValue={postTitle}
-                  onChange={(e) => this.setState({ postTitle: e.target.value })}
-                  type='text'
-                  placeholder='Enter the Post Title' 
-              />
-              <textarea
-                  defaultValue={description}
-                  onChange={(e) => this.setState({ description: e.target.value })}
-                  type='text'
-                  placeholder='Enter post description here'
-              ></textarea>
-              <input
-                defaultValue={dyeSources}
-                onChange={(e) => this.setState({ dyeSources: e.target.value })}
-                type='text'
-                placeholder='Enter the dyesources, seperated by a comma, here' 
-              />
-              <hr/>
-              <div><p>Image uploader here eventually</p></div>
-              <textarea
-                defaultValue={fibresUsed}
-                onChange={(e) => this.setState({ fibresUsed: e.target.value })}
-                type='text'
-                placeholder='Enter a list of fibre used, seperate by commas'
-              ></textarea>
+    const postFormMethods = {
+      onDrop: this.onDrop,
+      postImages: this.renderImages(),
+      handlePost: this.handlePost,
+      handleInputChange: this.handleInputChange
+    };
 
-              <textarea
-                defaultValue={materials}
-                onChange={(e) => this.setState({ materials: e.target.value })}
-                type='text'
-                placeholder='Enter a list of materials, seperate by a comma'
-              ></textarea>
-              <textarea
-                defaultValue={safetyDisposal}
-                onChange={(e) => this.setState({ safetyDisposal: e.target.value })}
-                type='text'
-                placeholder='Enter safety and disposal tips here'
-              ></textarea>
-              {postImagess}
-              <Dropzone
-                onDrop={this.onDrop}
-                accept='image/*'
-                multiple={false}
-              >
-                Drag and drop an image here, or click to select a file!
-              </Dropzone>
-              <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost}>Post</button>
-            </div>
-          </div>
-      )
+    return <PostForm {...this.props.getPostQuery.Post} {...postFormMethods}/>;
   }//close render
 
   onDrop = (files) => {

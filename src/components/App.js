@@ -109,6 +109,7 @@ class App extends React.Component {
             <Route path='/post/:postId' component={PostContainer} />
             <Route exact path='/create/post' component={CreatePost} />
             <Route exact path='/edit/post/:postId' component={EditPost} />
+            {/* <Route exact path='/:action{create|edit}/post/:postId' component={EditPost} /> */}
           </Switch>
         </div>
       </div>

@@ -7,8 +7,6 @@ import { graphql } from 'react-apollo';
 
 import Post from './Post';
 
-
-
 const PostContainer = (props) => {
     if (props.getPostQuery && props.getPostQuery.loading) {
         return <div>Loading</div>

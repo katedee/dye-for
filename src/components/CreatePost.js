@@ -3,8 +3,8 @@ import gql from 'graphql-tag';
 import { graphql, compose } from 'react-apollo';
 import { withRouter } from 'react-router'
 
-import Dropzone from 'react-dropzone';
 import PostImage from './PostImage';
+import PostForm from './PostForm';
 
 class CreatePost extends React.Component {
   constructor() {
@@ -94,6 +94,10 @@ class CreatePost extends React.Component {
     });
   }
 
+  handleInputChange(key, val) {
+    this.setState({[key]: val });
+  }
+
   renderImages () {
     //check localStorage on init load
     //then use state
@@ -160,62 +164,15 @@ class CreatePost extends React.Component {
   }
 
   render () {
-      const postImages = this.renderImages();
+      //onDrop, postImages, handlePost, handleChange
+      const postFormMethods = {
+        onDrop: this.onDrop,
+        postImages: this.renderImages(),
+        handlePost: this.handlePost,
+        handleInputChange: this.handleInputChange
+      };
 
-      return (
-          <div>
-            <div className='col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2'>
-              <input
-                  defaultValue={this.state.postTitle}
-                  onChange={(e) => this.setState({ postTitle: e.target.value })}
-                  type='text'
-                  placeholder='Enter the Post Title' 
-              />
-              <textarea
-                  defaultValue={this.state.description}
-                  onChange={(e) => this.setState({ description: e.target.value })}
-                  type='text'
-                  placeholder='Enter post description here'
-              ></textarea>
-              <input
-                defaultValue={this.state.dyeSources}
-                onChange={(e) => this.setState({ dyeSources: e.target.value })}
-                type='text'
-                placeholder='Enter the dyesources, seperated by a comma, here' 
-              />
-              <hr/>
-              <div><p>Image uploader here eventually</p></div>
-              <textarea
-                defaultValue={this.state.fibresUsed}
-                onChange={(e) => this.setState({ fibresUsed: e.target.value })}
-                type='text'
-                placeholder='Enter a list of fibre used, seperate by commas'
-              ></textarea>
-
-              <textarea
-                defaultValue={this.state.materials}
-                onChange={(e) => this.setState({ materials: e.target.value })}
-                type='text'
-                placeholder='Enter a list of materials, seperate by a comma'
-              ></textarea>
-              <textarea
-                defaultValue={this.state.safetyDisposal}
-                onChange={(e) => this.setState({ safetyDisposal: e.target.value })}
-                type='text'
-                placeholder='Enter safety and disposal tips here'
-              ></textarea>
-              {postImages}
-              <Dropzone
-                onDrop={this.onDrop}
-                accept='image/*'
-                multiple={false}
-              >
-                Drag and drop an image here, or click to select a file!
-              </Dropzone>
-              <button className='pa3 bg-black-10 bn dim ttu pointer' onClick={this.handlePost}>Post</button>
-            </div>
-          </div>
-      )
+      return <PostForm {...this.state} {...postFormMethods}/>;
   }//close render
 
   onDrop = (files) => {
